@@ -5,15 +5,12 @@ from os import getenv
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table, MetaData, Float
 from sqlalchemy import Column, String, Integer, ForeignKey
-from models.place import Place
 from models.base_model import BaseModel, Base
 import models
 from models.review import Review
 from sqlalchemy.ext.declarative import declarative_base
 from models.amenity import Amenity
-
 metadata = Base.metadata
-
 
 class Place(BaseModel, Base):
     """A place to stay"""
@@ -29,6 +26,7 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    
     place_amenity = Table('place_amenity', metadata,
         Column('place_id', String(60),
             ForeignKey('place.id'),
@@ -64,3 +62,4 @@ class Place(BaseModel, Base):
                 if amenity.place_id == self.id:
                     amenities_list.append(amenity)
             return amenities_list
+
