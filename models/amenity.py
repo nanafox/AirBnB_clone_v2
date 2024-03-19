@@ -4,8 +4,8 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from models.base_model import BaseModel, Base
-from models.place import Place
 import models
+from models.place import Place
 
 
 class Amenity(BaseModel, Base):

@@ -5,11 +5,12 @@ from os import getenv
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table, MetaData, Float
 from sqlalchemy import Column, String, Integer, ForeignKey
+from models.place import Place
 from models.base_model import BaseModel, Base
-from models.amenity import Amenity
+import models
 from models.review import Review
 from sqlalchemy.ext.declarative import declarative_base
-import models
+from models.amenity import Amenity
 
 metadata = Base.metadata
 
