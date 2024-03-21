@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""This module defines the DBStorage"""
+
 from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -71,3 +73,11 @@ class DBStorage:
     def rollback(self):
         """Rolls back the current database session."""
         self.__session.rollback()
+
+    def close(self):
+        """Closes the current session."""
+        self.__session.close()
+
+    def drop_all(self):
+        """Drops all tables in the database."""
+        Base.metadata.drop_all(self.__engine)
