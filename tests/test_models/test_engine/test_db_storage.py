@@ -7,7 +7,6 @@ import unittest
 from models import storage
 from models.engine.db_storage import DBStorage
 from models.state import State
-from console import HBNBCommand as hbnb
 
 
 storage_type = os.getenv("HBNB_TYPE_STORAGE")
