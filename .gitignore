@@ -12,6 +12,7 @@
 !README.md
 !AUTHORS
 !requirements.txt
+!*.sh
 
 # exclude driver test files
 *-*.py
