@@ -17,14 +17,14 @@ env.key_filename = "~/.ssh/alx-server-key.pem"
 
 def do_pack():
     """Generates a .tgz archive from the contents of the web_static folder."""
-    try:
-        local("mkdir -p versions")
-        date = datetime.now().strftime("%Y%m%d%H%M%S")
-        file_path = f"versions/web_static_{date}.tgz"
-        local(f"tar -cvzf {file_path} web_static")
-        return file_path
-    except IOError:
+    local("mkdir -p versions")
+    date = datetime.now().strftime("%Y%m%d%H%M%S")
+    file_path = f"versions/web_static_{date}.tgz"
+    if os.path.exists("web_static") is False:
         return None
+
+    local(f"tar -cvzf {file_path} web_static")
+    return file_path
 
 
 def do_deploy(archive_path: str) -> bool:
