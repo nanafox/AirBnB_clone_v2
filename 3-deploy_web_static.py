@@ -69,8 +69,10 @@ def do_deploy(archive_path: str) -> bool:
 
 def deploy():
     """Creates and distributes an archive to your web servers."""
-    archive_path = do_pack()
     if not archive_path:
         return False
 
     return do_deploy(archive_path)
+
+
+archive_path = do_pack()

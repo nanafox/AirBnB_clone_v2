@@ -69,7 +69,6 @@ def do_deploy(archive_path: str) -> bool:
 
 def deploy():
     """Creates and distributes an archive to your web servers."""
-    archive_path = do_pack()
     if not archive_path:
         return False
 
@@ -103,3 +102,6 @@ def do_clean(number=0) -> None:
         run(f"rm -rf /data/web_static/releases/{archive}")
         for archive in server_archives[:-number]
     ]
+
+
+archive_path = do_pack()
