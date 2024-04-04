@@ -3,6 +3,7 @@
 """This fabric script generates a .tgz archive from the contents of the
 web_static folder of the AirBnB Clone repo."""
 
+import os
 from datetime import datetime
 from fabric.api import local
 from fabric.api import env
@@ -26,33 +27,43 @@ def do_pack():
         return None
 
 
-def do_deploy(archive_path):
-    """Distributes an archive to your web servers."""
-    try:
-        archive_name = archive_path.split("/")[-1]
-        archive_name_no_ext = archive_name.split(".")[0]
-        put(archive_path, "/tmp/")
+def do_deploy(archive_path: str) -> bool:
+    """Distributes an archive to your web servers.
 
-        run(f"mkdir -p /data/web_static/releases/{archive_name_no_ext}/")
-        run(
-            f"tar -xzf /tmp/{archive_name} -C "
-            f"/data/web_static/releases/{archive_name_no_ext}/"
-        )
-        run(f"rm /tmp/{archive_name}")
-        run(
-            f"mv /data/web_static/releases/{archive_name_no_ext}/web_static/* "
-            f"/data/web_static/releases/{archive_name_no_ext}/"
-        )
-        run(
-            "rm -rf "
-            f"/data/web_static/releases/{archive_name_no_ext}/web_static"
-        )
-        run("rm -rf /data/web_static/current")
-        run(
-            f"ln -s /data/web_static/releases/{archive_name_no_ext}/ "
-            "/data/web_static/current"
-        )
-        print("New version deployed!")
-        return True
-    except IOError:
+    Args:
+        archive_path (str): Path to the archive to deploy.
+
+    Returns:
+        bool: True if all operations were successful, False otherwise.
+    """
+    if not archive_path:
         return False
+
+    if os.path.exists(archive_path) is False:
+        return False
+
+    archive_name = archive_path.split("/")[-1]
+    archive_name_no_ext = archive_name.split(".")[0]
+
+    put(archive_path, "/tmp/")
+    run(f"mkdir -p /data/web_static/releases/{archive_name_no_ext}/")
+    run(
+        f"tar -xzf /tmp/{archive_name} -C "
+        f"/data/web_static/releases/{archive_name_no_ext}/"
+    )
+    run(f"rm /tmp/{archive_name}")
+    run(
+        f"mv /data/web_static/releases/{archive_name_no_ext}/web_static/* "
+        f"/data/web_static/releases/{archive_name_no_ext}/"
+    )
+    run(
+        f"rm -rf /data/web_static/releases/{archive_name_no_ext}/web_static"
+    )
+    run("rm -rf /data/web_static/current")
+    run(
+        f"ln -s /data/web_static/releases/{archive_name_no_ext}/ "
+        "/data/web_static/current"
+    )
+
+    print("New version deployed!")
+    return True
