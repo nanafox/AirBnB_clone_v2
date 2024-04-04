@@ -34,8 +34,14 @@ $alias_config="
     }
 "
 
+exec { 'update packages list':
+  command => '/usr/bin/apt-get update -y',
+  path    => '/usr/bin:/usr/sbin:/bin',
+}
+
 package { 'nginx':
-    ensure => installed,
+  ensure => installed,
+  require => Exec['update packages list'],
 }
 
 file { ['/data/',
@@ -64,6 +70,8 @@ file { '/data/web_static/current':
     ensure  => 'link',
     target  => '/data/web_static/releases/test',
     require => File['/data/web_static/releases/test/index.html'],
+    owner   => 'ubuntu',
+    group   => 'ubuntu',
 }
 
 exec { 'update_nginx_config':
