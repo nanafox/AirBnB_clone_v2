@@ -35,3 +35,7 @@ def python_route(text="is cool"):
 def number(n):
     """Returns a string stating an input is a number if it is an integer."""
     return f"{n} is a number"
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
