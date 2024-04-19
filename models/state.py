@@ -20,7 +20,7 @@ class State(BaseModel, Base):
             "City", backref="state", cascade="all, delete, delete-orphan"
         )
 
-    elif getenv("HBNB_TYPE_STORAGE") == "file":
+    else:  # assume file storage if DB storage is not explicitly set
 
         @property
         def cities(self):
