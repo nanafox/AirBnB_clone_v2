@@ -2,7 +2,9 @@
 
 """This module creates a single route to the root of the website"""
 
-from web_flask import app
+from flask import Flask
+
+app = Flask(__name__)
 
 
 @app.route("/", strict_slashes=False)
