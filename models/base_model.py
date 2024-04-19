@@ -18,7 +18,6 @@ class BaseModel:
         nullable=False,
         unique=True,
         primary_key=True,
-        default=str(uuid.uuid4()),
     )
     created_at = Column(DateTime, nullable=False, default=datetime.now())
     updated_at = Column(DateTime, nullable=False, default=datetime.now())
