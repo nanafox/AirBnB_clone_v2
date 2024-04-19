@@ -21,9 +21,7 @@ class FileStorage:
         """Returns a dictionary of models currently in the file storage,
         filtered by the type of class, if provided."""
         if cls:
-            return {
-                k: v for k, v in self.__objects.items() if isinstance(v, cls)
-            }
+            return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
 
         return self.__objects
 
@@ -65,3 +63,7 @@ class FileStorage:
         if obj is not None:
             obj_key = f"{obj.__class__.__name__}.{obj.id}"
             del self.__objects[obj_key]
+
+    def close(self):
+        """Closes the session and reloads the contents in the storage."""
+        self.reload()
