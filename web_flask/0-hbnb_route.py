@@ -8,7 +8,7 @@ from web_flask import app
 @app.route("/", strict_slashes=False)
 def home():
     """Returns a simple string for the homepage"""
-    return "Hello HBNB"
+    return "Hello HBNB!"
 
 
 if __name__ == "__main__":

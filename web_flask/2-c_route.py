@@ -9,7 +9,7 @@ from web_flask import app
 @app.route("/", strict_slashes=False)
 def home():
     """Returns a simple string for the homepage."""
-    return "Hello HBNB"
+    return "Hello HBNB!"
 
 
 @app.route("/hbnb", strict_slashes=False)
