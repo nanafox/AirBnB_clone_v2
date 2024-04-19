@@ -6,6 +6,7 @@ from markupsafe import escape
 from flask import render_template
 from web_flask import app
 
+
 @app.route("/", strict_slashes=False)
 def home():
     """Returns a simple string for the homepage."""
@@ -36,10 +37,11 @@ def number(n):
     """Returns a string stating an input is a number if it is an integer."""
     return f"{n} is a number"
 
+
 @app.route("/number_template/<int:n>", strict_slashes=False)
 def number_template(n):
     """Renders information about a number."""
-    return render_template('5-number.html', number=n)
+    return render_template("5-number.html", number=n)
 
 
 if __name__ == "__main__":
