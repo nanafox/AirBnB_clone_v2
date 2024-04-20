@@ -26,7 +26,7 @@ class DBStorage:
         """Instantiates a new DBStorage object."""
         db_url = {
             "database": f"{getenv('HBNB_MYSQL_DB')}",
-            "drivername": "mysql",
+            "drivername": "mysql+mysqldb",
             "username": f"{getenv('HBNB_MYSQL_USER')}",
             "password": f"{getenv('HBNB_MYSQL_PWD')}",
             "host": f"{getenv('HBNB_MYSQL_HOST')}",
