@@ -4,14 +4,19 @@
 
 from os import getenv
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.engine.url import URL
 from models.base_model import Base
 from models.city import City
 from models.state import State
 from models.user import User
 from models.place import Place
 from models.review import Review
+from lazy_methods import LazyMethods
+
+
+# set the default collation and character set
+LazyMethods.set_default_collation()
 
 
 class DBStorage:
@@ -23,11 +28,15 @@ class DBStorage:
 
     def __init__(self):
         """Instantiates a new DBStorage object."""
+        db_url = {
+            "database": f"{getenv('HBNB_MYSQL_DB')}",
+            "drivername": "mysql",
+            "username": f"{getenv('HBNB_MYSQL_USER')}",
+            "password": f"{getenv('HBNB_MYSQL_PWD')}",
+            "host": f"{getenv('HBNB_MYSQL_HOST')}",
+        }
         self.__engine = create_engine(
-            "mysql+mysqldb://"
-            f"{getenv('HBNB_MYSQL_USER')}:{getenv('HBNB_MYSQL_PWD')}"
-            f"@{getenv('HBNB_MYSQL_HOST')}/{getenv('HBNB_MYSQL_DB')}",
-            pool_pre_ping=True
+            URL(**db_url),
         )
 
         if getenv("HBNB_ENV") == "test":
@@ -64,13 +73,11 @@ class DBStorage:
     def reload(self):
         """Creates all tables in the database and the current
         database session."""
-        try:
-            Base.metadata.create_all(self.__engine)
-        except SQLAlchemyError:
-            pass
+        Base.metadata.create_all(self.__engine)
 
         session_factory = sessionmaker(
-            bind=self.__engine, expire_on_commit=False
+            bind=self.__engine,
+            expire_on_commit=False
         )
         db_session = scoped_session(session_factory)
         self.__session = db_session()
