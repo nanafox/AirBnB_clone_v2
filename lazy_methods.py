@@ -3,11 +3,11 @@
 """This module defines useful short methods that are heavily used during
 testing."""
 
-from os import getenv
+import sys
 from io import StringIO
 from uuid import UUID as uuid
 from random import choice
-import MySQLdb
+from sqlalchemy import text
 
 
 class LazyMethods:
@@ -73,68 +73,51 @@ class LazyMethods:
         return key, choice(self.__random_attributes[key])
 
     @staticmethod
-    def set_default_collation(charset="utf8mb4", collate="utf8mb4_unicode_ci"):
+    def set_default_collation(
+        engine=None, db=None, charset="utf8mb4", collate="utf8mb4_unicode_ci"
+    ):
         """
-        Sets the default collation for the MySQL database and all its tables.
+        Sets the default collation for a given database.
 
         Args:
-            charset (str, optional): The character set to be used. Defaults to
+            engine (sqlalchemy.engine.Engine): The SQLAlchemy engine object.
+            db (str): The name of the database.
+            charset (str, optional): The character set to use. Defaults to
             "utf8mb4".
-            collate (str, optional): The collation to be used. Defaults to
+            collate (str, optional): The collation to use. Defaults to
             "utf8mb4_unicode_ci".
 
-        This method establishes a connection to the MySQL database, retrieves
-        all table names, and sets the default collation for the database and
-        each table to the specified charset and collate values. It also
-        temporarily disables foreign key checks during the process.
-
-        Note:
-            This method requires the following environment variables to be set:
-            - HBNB_MYSQL_DB: The name of the MySQL database
-            - HBNB_MYSQL_USER: The username for the MySQL database
-            - HBNB_MYSQL_PWD: The password for the MySQL database
-            - HBNB_MYSQL_HOST: The host address for the MySQL database
+        Raises:
+            SystemExit: If the engine or db is None.
         """
-        # Establish a database connection
-        db = MySQLdb.connect(
-            db=f"{getenv('HBNB_MYSQL_DB')}",
-            user=f"{getenv('HBNB_MYSQL_USER')}",
-            password=f"{getenv('HBNB_MYSQL_PWD')}",
-            host=f"{getenv('HBNB_MYSQL_HOST')}",
-        )
+        if engine is None or db is None:
+            sys.exit(1)
 
-        # Create a cursor object
-        cursor = db.cursor()
+        with engine.connect() as connection:
+            # Begin a new transaction
+            with connection.begin():
 
-        # Execute SQL command to get all table names
-        cursor.execute("SHOW TABLES")
-
-        # Fetch all the rows
-        tables = cursor.fetchall()
-
-        cursor.execute("SET FOREIGN_KEY_CHECKS=0")
-
-        cursor.execute(
-            f"ALTER DATABASE {getenv('HBNB_MYSQL_DB')} "
-            f"CHARACTER SET = {charset} COLLATE = {collate};"
-        )
-
-        for table_name in tables:
-            # Execute SQL command to alter table character set
-            table_name = table_name[0]
-
-            try:
-                cursor.execute(
-                    f"ALTER TABLE {table_name} "
-                    f"CONVERT TO CHARACTER SET {charset} COLLATE {collate}"
+                connection.execute(
+                    f"ALTER DATABASE {db} "
+                    f"CHARACTER SET = {charset} "
+                    f"COLLATE = {collate};"
                 )
-            except MySQLdb.ProgrammingError:
-                pass
 
-        cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+                # Execute raw SQL to disable foreign key checks
+                connection.execute(text("SET FOREIGN_KEY_CHECKS=0"))
 
-        # Commit your changes in the database
-        db.commit()
+                # Get table names
+                table_names = engine.table_names()
 
-        # Disconnect from server
-        db.close()
+                for table_name in table_names:
+                    # Execute raw SQL to alter table character set
+                    connection.execute(
+                        text(
+                            f"ALTER TABLE {table_name} "
+                            f"CONVERT TO CHARACTER SET {charset} "
+                            f"COLLATE {collate};"
+                        )
+                    )
+
+                # Execute raw SQL to enable foreign key checks
+                connection.execute(text("SET FOREIGN_KEY_CHECKS=1"))
