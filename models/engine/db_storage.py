@@ -15,10 +15,6 @@ from models.review import Review
 from lazy_methods import LazyMethods
 
 
-# set the default collation and character set
-LazyMethods.set_default_collation()
-
-
 class DBStorage:
     """This class defines the database storage engine"""
 
@@ -73,6 +69,11 @@ class DBStorage:
     def reload(self):
         """Creates all tables in the database and the current
         database session."""
+        # set the default collation and character set
+        LazyMethods.set_default_collation(
+            engine=self.__engine, db=getenv("HBNB_MYSQL_DB")
+        )
+
         Base.metadata.create_all(self.__engine)
 
         session_factory = sessionmaker(
