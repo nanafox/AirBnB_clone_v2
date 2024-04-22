@@ -77,11 +77,10 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
 
         session_factory = sessionmaker(
-            bind=self.__engine,
-            expire_on_commit=False
+            bind=self.__engine, expire_on_commit=False
         )
-        db_session = scoped_session(session_factory)
-        self.__session = db_session()
+
+        self.__session = scoped_session(session_factory)
 
     def rollback(self):
         """Rolls back the current database session."""
@@ -89,7 +88,7 @@ class DBStorage:
 
     def close(self):
         """Closes the current session."""
-        self.__session.close()
+        self.__session.remove()
 
     def drop_all(self):
         """Drops all tables in the database."""
