@@ -7,7 +7,7 @@ import sys
 from io import StringIO
 from uuid import UUID as uuid
 from random import choice
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 
 class LazyMethods:
@@ -107,7 +107,8 @@ class LazyMethods:
                 connection.execute(text("SET FOREIGN_KEY_CHECKS=0"))
 
                 # Get table names
-                table_names = engine.table_names()
+                insp = inspect(engine)
+                table_names = insp.get_table_names()
 
                 for table_name in table_names:
                     # Execute raw SQL to alter table character set
